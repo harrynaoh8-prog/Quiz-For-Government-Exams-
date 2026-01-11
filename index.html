@@ -1,43 +1,170 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Railway Exam Quiz</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Simple Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 40px auto;
+      background: #f7f7f7;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    .question {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .options button {
+      display: block;
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      background: white;
+      transition: background-color 0.3s ease;
+    }
+    .options button:hover {
+      background-color: #ddd;
+    }
+    .correct {
+      background-color: #4CAF50 !important;
+      color: white;
+    }
+    .wrong {
+      background-color: #f44336 !important;
+      color: white;
+    }
+    #next-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      display: none;
+      cursor: pointer;
+    }
+    #result {
+      font-size: 22px;
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h1>Railway Exam Practice Quiz</h1>
+  <h1>Simple Quiz</h1>
 
-  <div id="sectionSelect">
-    <h2>Select Section</h2>
-    <button onclick="startQuiz('gk')">General Knowledge</button>
-    <button onclick="startQuiz('math')">Mathematics</button>
-    <button onclick="startQuiz('reasoning')">Reasoning</button>
+  <div id="quiz-container">
+    <div id="question" class="question"></div>
+    <div class="options">
+      <button id="btn0"></button>
+      <button id="btn1"></button>
+      <button id="btn2"></button>
+      <button id="btn3"></button>
+    </div>
+    <button id="next-btn" onclick="nextQuestion()">Next</button>
+    <div id="result"></div>
   </div>
 
-  <div id="quizBox" class="hidden">
-    <div class="top">
-      <span id="timer">05:00</span>
-      <span id="qno"></span>
-    </div>
+<script>
+  const quizData = [
+    {
+      question: "What is the capital of India?",
+      options: ["Mumbai", "Delhi", "Kolkata", "Chennai"],
+      answer: 1
+    },
+    {
+      question: "2 + 3 × 2 = ?",
+      options: ["10", "8", "7", "12"],
+      answer: 2
+    },
+    {
+      question: "Father of Indian Constitution?",
+      options: ["Gandhi", "Nehru", "Ambedkar", "Patel"],
+      answer: 2
+    },
+    {
+      question: "What is 5 squared?",
+      options: ["10", "20", "25", "30"],
+      answer: 2
+    }
+  ];
 
-    <h2 id="question"></h2>
+  let currentQuestion = 0;
+  let score = 0;
+  let answered = false;
 
-    <div id="options">
-      <button onclick="checkAnswer(0)" id="opt0"></button>
-      <button onclick="checkAnswer(1)" id="opt1"></button>
-      <button onclick="checkAnswer(2)" id="opt2"></button>
-      <button onclick="checkAnswer(3)" id="opt3"></button>
-    </div>
+  const questionEl = document.getElementById("question");
+  const optionButtons = [
+    document.getElementById("btn0"),
+    document.getElementById("btn1"),
+    document.getElementById("btn2"),
+    document.getElementById("btn3")
+  ];
+  const nextBtn = document.getElementById("next-btn");
+  const resultEl = document.getElementById("result");
 
-    <button id="nextBtn" onclick="nextQuestion()">Next</button>
-  </div>
-</div>
+  function loadQuestion() {
+    answered = false;
+    nextBtn.style.display = "none";
+    resultEl.innerText = "";
+    let q = quizData[currentQuestion];
+    questionEl.innerText = q.question;
+    q.options.forEach((option, index) => {
+      let btn = optionButtons[index];
+      btn.innerText = option;
+      btn.disabled = false;
+      btn.className = "";
+    });
+  }
 
-<script src="script.js"></script>
+  function selectAnswer(index) {
+    if (answered) return;
+    answered = true;
+    let q = quizData[currentQuestion];
+    if (index === q.answer) {
+      optionButtons[index].classList.add("correct");
+      score++;
+    } else {
+      optionButtons[index].classList.add("wrong");
+      optionButtons[q.answer].classList.add("correct");
+    }
+    optionButtons.forEach(btn => btn.disabled = true);
+    nextBtn.style.display = "block";
+  }
+
+  function nextQuestion() {
+    currentQuestion++;
+    if (currentQuestion < quizData.length) {
+      loadQuestion();
+    } else {
+      showResult();
+    }
+  }
+
+  function showResult() {
+    questionEl.style.display = "none";
+    optionButtons.forEach(btn => btn.style.display = "none");
+    nextBtn.style.display = "none";
+    resultEl.innerHTML = `<h2>Quiz Completed!</h2><p>Your Score: ${score} / ${quizData.length}</p>`;
+  }
+
+  optionButtons.forEach((btn, idx) => {
+    btn.addEventListener("click", () => selectAnswer(idx));
+  });
+
+  loadQuestion();
+</script>
+
 </body>
 </html>
+
+
 
 
