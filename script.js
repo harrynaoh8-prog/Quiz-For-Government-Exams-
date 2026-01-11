@@ -1,12 +1,12 @@
 body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
+  font-family: Arial;
+  background: #eef2f3;
 }
 
-.quiz-container {
+.container {
+  width: 400px;
   background: white;
-  width: 350px;
-  margin: 50px auto;
+  margin: 40px auto;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
@@ -15,13 +15,29 @@ body {
 button {
   width: 100%;
   padding: 10px;
-  margin: 5px 0;
+  margin: 6px 0;
   cursor: pointer;
 }
 
-#nextBtn {
+.top {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+#timer {
+  color: red;
+}
+
+.hidden {
   display: none;
+}
+
+#nextBtn {
   background: green;
   color: white;
+  display: none;
 }
+
+
 
