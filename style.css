@@ -1,96 +1,84 @@
-let quizData = {
-  gk: [
-    {q:"Capital of India?", o:["Mumbai","Delhi","Kolkata","Chennai"], a:1},
-    {q:"Father of Indian Constitution?", o:["Gandhi","Nehru","Ambedkar","Patel"], a:2},
-    {q:"ISRO HQ?", o:["Delhi","Mumbai","Bengaluru","Hyderabad"], a:2},
-    {q:"National Animal?", o:["Tiger","Lion","Elephant","Leopard"], a:0},
-    {q:"President of India?", o:["Modi","Murmu","Kovind","Gandhi"], a:1},
-    {q:"Indian currency?", o:["Dollar","Rupee","Pound","Euro"], a:1},
-    {q:"Longest river?", o:["Yamuna","Ganga","Brahmaputra","Godavari"], a:1},
-    {q:"Indian Parliament has?", o:["1 House","2 Houses","3 Houses","4 Houses"], a:1},
-    {q:"Railway HQ?", o:["Delhi","Mumbai","Kolkata","Chennai"], a:0},
-    {q:"National Sport?", o:["Cricket","Hockey","Football","Kabaddi"], a:1}
-  ],
+const quiz = [
+  {q:"Capital of India?", o:["Mumbai","Delhi","Chennai","Kolkata"], a:1},
+  {q:"2 + 3 × 2 = ?", o:["10","8","7","12"], a:2},
+  {q:"Father of Indian Constitution?", o:["Gandhi","Nehru","Ambedkar","Patel"], a:2},
+  {q:"1,4,9,?", o:["14","15","16","18"], a:2},
+  {q:"Odd one out?", o:["Bus","Car","Train","Apple"], a:3}
+];
 
-  math: [
-    {q:"10 + 15 = ?", o:["20","25","30","15"], a:1},
-    {q:"25 × 4 = ?", o:["50","75","100","90"], a:2},
-    {q:"100 ÷ 5 = ?", o:["10","15","20","25"], a:2},
-    {q:"Square of 12?", o:["124","144","132","156"], a:1},
-    {q:"15% of 200?", o:["25","30","20","35"], a:1},
-    {q:"LCM of 2,4?", o:["2","4","6","8"], a:1},
-    {q:"½ of 60?", o:["20","25","30","40"], a:2},
-    {q:"7²?", o:["14","21","49","42"], a:2},
-    {q:"Simple interest formula?", o:["PTR/100","P+I","A-P","RT/P"], a:0},
-    {q:"Cube of 3?", o:["6","9","27","81"], a:2}
-  ],
+let index = 0;
+let score = 0;
+let time = 10;
+let timer;
 
-  reasoning: [
-    {q:"Odd one out?", o:["Dog","Cat","Cow","Car"], a:3},
-    {q:"2,4,6,?", o:["7","8","10","12"], a:1},
-    {q:"A is brother of B. B is sister of C. A is?", o:["Father","Brother","Uncle","Son"], a:1},
-    {q:"Day after Monday?", o:["Tuesday","Sunday","Wednesday","Friday"], a:0},
-    {q:"Opposite of Big?", o:["Large","Huge","Small","Tall"], a:2},
-    {q:"1,4,9,?", o:["12","15","16","18"], a:2},
-    {q:"Eye is to See as Ear is to?", o:["Smell","Hear","Taste","Touch"], a:1},
-    {q:"Odd number?", o:["2","4","6","7"], a:3},
-    {q:"Clock shows 3:00 angle?", o:["90°","60°","45°","120°"], a:0},
-    {q:"Apple : Fruit :: Carrot : ?", o:["Root","Vegetable","Leaf","Seed"], a:1}
-  ]
-};
+function loadQuestion(){
+  time = 10;
+  document.getElementById("timer").innerText = time;
+  document.getElementById("progress").innerText =
+    `Q${index+1}/${quiz.length}`;
 
-let section, index=0, score=0, timer, time=300;
+  let q = quiz[index];
+  document.getElementById("question").innerText = q.q;
 
-function startQuiz(sec){
-  section = quizData[sec];
-  document.getElementById("sectionSelect").classList.add("hidden");
-  document.getElementById("quizBox").classList.remove("hidden");
+  q.o.forEach((opt,i)=>{
+    let btn = document.getElementById("b"+i);
+    btn.innerText = opt;
+    btn.className="";
+    btn.disabled = false;
+  });
+
   startTimer();
-  loadQuestion();
 }
 
 function startTimer(){
+  clearInterval(timer);
   timer = setInterval(()=>{
     time--;
-    let m = Math.floor(time/60);
-    let s = time%60;
-    document.getElementById("timer").innerText =
-      `${m}:${s<10?"0"+s:s}`;
-    if(time<=0){
-      finishQuiz();
+    document.getElementById("timer").innerText = time;
+    if(time === 0){
+      clearInterval(timer);
+      autoNext();
     }
   },1000);
 }
 
-function loadQuestion(){
-  let q = section[index];
-  document.getElementById("qno").innerText = `Q${index+1}/10`;
-  document.getElementById("question").innerText = q.q;
-  q.o.forEach((op,i)=>{
-    document.getElementById("opt"+i).innerText = op;
-  });
-  document.getElementById("nextBtn").style.display="none";
+function selectAnswer(i){
+  clearInterval(timer);
+
+  let correct = quiz[index].a;
+  document.getElementById("b"+correct).classList.add("correct");
+
+  if(i === correct) score++;
+  else document.getElementById("b"+i).classList.add("wrong");
+
+  disableButtons();
+  setTimeout(nextQuestion,1000);
 }
 
-function checkAnswer(i){
-  if(i === section[index].a) score++;
-  document.getElementById("nextBtn").style.display="block";
+function autoNext(){
+  disableButtons();
+  document.getElementById("b"+quiz[index].a).classList.add("correct");
+  setTimeout(nextQuestion,1000);
+}
+
+function disableButtons(){
+  for(let i=0;i<4;i++){
+    document.getElementById("b"+i).disabled = true;
+  }
 }
 
 function nextQuestion(){
   index++;
-  if(index<10) loadQuestion();
-  else finishQuiz();
+  if(index < quiz.length){
+    loadQuestion();
+  } else {
+    document.querySelector(".quiz-app").innerHTML =
+      `<h2>Quiz Finished 🎉</h2>
+       <p>Score: ${score}/${quiz.length}</p>
+       <button onclick="location.reload()">Play Again</button>`;
+  }
 }
 
-function finishQuiz(){
-  clearInterval(timer);
-  document.querySelector(".container").innerHTML =
-    `<h2>Test Finished</h2>
-     <p>Score: ${score}/10</p>
-     <p>Time Taken: ${5 - Math.floor(time/60)} minutes</p>
-     <button onclick="location.reload()">Restart</button>`;
-}
-
+loadQuestion();
 
 
