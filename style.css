@@ -1,1 +1,56 @@
+const quiz = [
+  {
+    q: "Capital of India?",
+    options: ["Mumbai", "Delhi", "Chennai", "Kolkata"],
+    answer: 1
+  },
+  {
+    q: "Father of Indian Constitution?",
+    options: ["Gandhi", "Nehru", "Ambedkar", "Patel"],
+    answer: 2
+  },
+  {
+    q: "ISRO headquarters is in?",
+    options: ["Delhi", "Mumbai", "Bengaluru", "Hyderabad"],
+    answer: 2
+  }
+];
+
+let index = 0;
+let score = 0;
+
+function loadQuiz() {
+  document.getElementById("result").innerText = "";
+  document.getElementById("nextBtn").style.display = "none";
+
+  let q = quiz[index];
+  document.getElementById("question").innerText = q.q;
+
+  q.options.forEach((opt, i) => {
+    document.getElementById("opt" + i).innerText = opt;
+  });
+}
+
+function checkAnswer(selected) {
+  if (selected === quiz[index].answer) {
+    score++;
+    document.getElementById("result").innerText = "✅ Correct!";
+  } else {
+    document.getElementById("result").innerText = "❌ Wrong!";
+  }
+  document.getElementById("nextBtn").style.display = "block";
+}
+
+function nextQuestion() {
+  index++;
+  if (index < quiz.length) {
+    loadQuiz();
+  } else {
+    document.querySelector(".quiz-container").innerHTML =
+      `<h2>Quiz Finished 🎉</h2>
+       <p>Your Score: ${score}/${quiz.length}</p>`;
+  }
+}
+
+loadQuiz();
 
