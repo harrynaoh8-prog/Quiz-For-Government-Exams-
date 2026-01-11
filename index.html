@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Simple Quiz</title>
+  <title>Quiz with Explanations</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -49,6 +49,14 @@
       display: none;
       cursor: pointer;
     }
+    #explanation {
+      margin-top: 15px;
+      font-style: italic;
+      background: #e0e0e0;
+      padding: 12px;
+      border-radius: 6px;
+      display: none;
+    }
     #result {
       font-size: 22px;
       text-align: center;
@@ -58,7 +66,7 @@
 </head>
 <body>
 
-  <h1>Simple Quiz</h1>
+  <h1>Quiz with Explanations</h1>
 
   <div id="quiz-container">
     <div id="question" class="question"></div>
@@ -68,6 +76,7 @@
       <button id="btn2"></button>
       <button id="btn3"></button>
     </div>
+    <div id="explanation"></div>
     <button id="next-btn" onclick="nextQuestion()">Next</button>
     <div id="result"></div>
   </div>
@@ -77,22 +86,26 @@
     {
       question: "What is the capital of India?",
       options: ["Mumbai", "Delhi", "Kolkata", "Chennai"],
-      answer: 1
+      answer: 1,
+      explanation: "Delhi is the capital city of India and houses important government offices."
     },
     {
       question: "2 + 3 × 2 = ?",
       options: ["10", "8", "7", "12"],
-      answer: 2
+      answer: 2,
+      explanation: "According to order of operations, multiply before addition: 3×2=6; then 2+6=8."
     },
     {
       question: "Father of Indian Constitution?",
       options: ["Gandhi", "Nehru", "Ambedkar", "Patel"],
-      answer: 2
+      answer: 2,
+      explanation: "Dr. B.R. Ambedkar is known as the Father of the Indian Constitution."
     },
     {
       question: "What is 5 squared?",
       options: ["10", "20", "25", "30"],
-      answer: 2
+      answer: 2,
+      explanation: "5 squared means 5×5 which equals 25."
     }
   ];
 
@@ -108,12 +121,16 @@
     document.getElementById("btn3")
   ];
   const nextBtn = document.getElementById("next-btn");
+  const explanationEl = document.getElementById("explanation");
   const resultEl = document.getElementById("result");
 
   function loadQuestion() {
     answered = false;
     nextBtn.style.display = "none";
+    explanationEl.style.display = "none";
+    explanationEl.innerText = "";
     resultEl.innerText = "";
+    
     let q = quizData[currentQuestion];
     questionEl.innerText = q.question;
     q.options.forEach((option, index) => {
@@ -128,6 +145,11 @@
     if (answered) return;
     answered = true;
     let q = quizData[currentQuestion];
+    
+    // Show explanation
+    explanationEl.style.display = "block";
+    explanationEl.innerText = q.explanation;
+
     if (index === q.answer) {
       optionButtons[index].classList.add("correct");
       score++;
@@ -151,6 +173,7 @@
   function showResult() {
     questionEl.style.display = "none";
     optionButtons.forEach(btn => btn.style.display = "none");
+    explanationEl.style.display = "none";
     nextBtn.style.display = "none";
     resultEl.innerHTML = `<h2>Quiz Completed!</h2><p>Your Score: ${score} / ${quizData.length}</p>`;
   }
@@ -164,7 +187,3 @@
 
 </body>
 </html>
-
-
-
-
