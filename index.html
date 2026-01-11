@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Quiz with Explanations</title>
+  <title>Quiz with Timer and Explanations</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -14,6 +14,12 @@
     }
     h1 {
       text-align: center;
+    }
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      margin-bottom: 10px;
     }
     .question {
       font-size: 20px;
@@ -62,13 +68,22 @@
       text-align: center;
       margin-top: 20px;
     }
+    #timer {
+      font-size: 18px;
+      color: #555;
+    }
   </style>
 </head>
 <body>
 
-  <h1>Quiz with Explanations</h1>
+  <h1>Quiz with Timer and Explanations</h1>
 
   <div id="quiz-container">
+    <div class="top-bar">
+      <div id="question-count">Question 1 / 4</div>
+      <div id="timer">Time: 15</div>
+    </div>
+
     <div id="question" class="question"></div>
     <div class="options">
       <button id="btn0"></button>
@@ -112,7 +127,11 @@
   let currentQuestion = 0;
   let score = 0;
   let answered = false;
+  let timer;
+  let timeLeft = 15;
 
+  const questionCountEl = document.getElementById("question-count");
+  const timerEl = document.getElementById("timer");
   const questionEl = document.getElementById("question");
   const optionButtons = [
     document.getElementById("btn0"),
@@ -130,26 +149,37 @@
     explanationEl.style.display = "none";
     explanationEl.innerText = "";
     resultEl.innerText = "";
-    
+    timeLeft = 15;
+    timerEl.textContent = `Time: ${timeLeft}`;
+    clearInterval(timer);
+
     let q = quizData[currentQuestion];
+    questionCountEl.innerText = `Question ${currentQuestion + 1} / ${quizData.length}`;
     questionEl.innerText = q.question;
+
     q.options.forEach((option, index) => {
       let btn = optionButtons[index];
       btn.innerText = option;
       btn.disabled = false;
       btn.className = "";
     });
+
+    timer = setInterval(() => {
+      timeLeft--;
+      timerEl.textContent = `Time: ${timeLeft}`;
+      if (timeLeft <= 0) {
+        clearInterval(timer);
+        timeOut();
+      }
+    }, 1000);
   }
 
   function selectAnswer(index) {
     if (answered) return;
     answered = true;
-    let q = quizData[currentQuestion];
-    
-    // Show explanation
-    explanationEl.style.display = "block";
-    explanationEl.innerText = q.explanation;
+    clearInterval(timer);
 
+    let q = quizData[currentQuestion];
     if (index === q.answer) {
       optionButtons[index].classList.add("correct");
       score++;
@@ -157,7 +187,27 @@
       optionButtons[index].classList.add("wrong");
       optionButtons[q.answer].classList.add("correct");
     }
+
     optionButtons.forEach(btn => btn.disabled = true);
+
+    explanationEl.style.display = "block";
+    explanationEl.innerText = q.explanation;
+
+    nextBtn.style.display = "block";
+  }
+
+  function timeOut() {
+    if (answered) return;
+    answered = true;
+
+    let q = quizData[currentQuestion];
+
+    optionButtons[q.answer].classList.add("correct");
+    optionButtons.forEach(btn => btn.disabled = true);
+
+    explanationEl.style.display = "block";
+    explanationEl.innerText = "Time's up! " + q.explanation;
+
     nextBtn.style.display = "block";
   }
 
@@ -171,10 +221,13 @@
   }
 
   function showResult() {
+    questionCountEl.style.display = "none";
+    timerEl.style.display = "none";
     questionEl.style.display = "none";
     optionButtons.forEach(btn => btn.style.display = "none");
     explanationEl.style.display = "none";
     nextBtn.style.display = "none";
+
     resultEl.innerHTML = `<h2>Quiz Completed!</h2><p>Your Score: ${score} / ${quizData.length}</p>`;
   }
 
@@ -187,3 +240,4 @@
 
 </body>
 </html>
+
